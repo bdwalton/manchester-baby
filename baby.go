@@ -2,9 +2,16 @@ package main
 
 import (
 	"errors"
+	"flag"
 	"fmt"
+	"log"
+	"os"
 	"strconv"
 	"strings"
+)
+
+var (
+	programfile = flag.String("programfile", "", "path to program file")
 )
 
 const (
@@ -139,8 +146,12 @@ func instructionFromCode(code string) (*instruction, error) {
 }
 
 func main() {
+	flag.Parse()
+	data, err := os.ReadFile(*programfile)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(string(data))
 	b := NewBaby()
-	b.Display()
 	b.Run()
-	b.Display()
 }
