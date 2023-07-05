@@ -55,6 +55,10 @@ func (i *instruction) String() string {
 	return sb.String()
 }
 
+func (i *instruction) toInt32() int32 {
+	return 0 | (i.op << 12) | i.data
+}
+
 func instFromWord(word int32) *instruction {
 	i := &instruction{
 		op:   (word & 0x0000F000) >> 12,
