@@ -12,14 +12,14 @@ const (
 
 // Instruction opcodes
 const (
-	JMP = iota // Jump (000)
-	SUB        // Subtract (001)
-	LDN        // Load negative (010)
-	CMP        // Compare (011)
-	JRP        // Jump relative (100)
-	// SUB is 101
-	STO = 6
-	STP = 7
+	JMP  = iota // Jump (000)
+	SUB         // Subtract (001)
+	LDN         // Load negative (010)
+	CMP         // Compare (011)
+	JRP         // Jump relative (100)
+	SUB2        // Subtract (101)
+	STO         // Store (110)
+	STP         // Stop (111)
 )
 
 type instruction struct {
@@ -36,7 +36,7 @@ func instFromWord(word int32) *instruction {
 	return i
 }
 
-var names = []string{"JMP", "SUB", "LDN", "CMP", "JRP", "SUB", "BAAAAADD", "STP"}
+var names = []string{"JMP", "SUB", "LDN", "CMP", "JRP", "SUB", "STO", "STP"}
 
 func (i *instruction) String() string {
 	return names[i.op]
