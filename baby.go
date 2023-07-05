@@ -62,8 +62,6 @@ func (b *baby) Display() {
 }
 
 func (b *baby) Step() {
-	b.memory[b.ci] = 0 | (JRP << 12)
-	b.memory[b.ci+1] = 0 | (STP << 12)
 	inst := instFromWord(b.memory[b.ci])
 	fmt.Println(inst)
 	b.running = false
