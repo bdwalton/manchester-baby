@@ -83,8 +83,12 @@ type baby struct {
 	running     bool
 }
 
-func NewBaby() *baby {
-	return &baby{running: true}
+func NewBaby(prog []int32) *baby {
+	b := &baby{running: true}
+	for i, m := range prog {
+		b.memory[i] = m
+	}
+	return b
 }
 
 func (b *baby) Display() {
@@ -145,13 +149,38 @@ func instructionFromCode(code string) (*instruction, error) {
 	}
 }
 
+func loadProgram(programfile string) ([]int32, error) {
+	data, err := os.ReadFile(programfile)
+	if err != nil {
+		return nil, fmt.Errorf("error reading programfile: %v", err)
+	}
+
+	lines := strings.Split(string(data), "\n")
+	prog := []int32{}
+	for i, line := range lines {
+		if line != "" {
+			inst, err := instructionFromCode(line)
+			if err != nil {
+				return nil, fmt.Errorf("error on line %d: %v", i+1, err)
+			}
+			prog = append(prog, inst.toInt32())
+		}
+	}
+
+	if len(prog) > words {
+		return nil, fmt.Errorf("too many words (%d) for baby (max words: %d)", len(prog), words)
+	}
+
+	return prog, nil
+}
+
 func main() {
 	flag.Parse()
-	data, err := os.ReadFile(*programfile)
+
+	prog, err := loadProgram(*programfile)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Couldn't load program from %q: %v", *programfile, err)
 	}
-	fmt.Println(string(data))
-	b := NewBaby()
+	b := NewBaby(prog)
 	b.Run()
 }
