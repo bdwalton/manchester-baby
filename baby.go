@@ -63,12 +63,12 @@ func (i *instruction) String() string {
 }
 
 func (i *instruction) toInt32() int32 {
-	return 0 | (i.op << 12) | i.data
+	return 0 | (i.op << 13) | i.data
 }
 
 func instFromWord(word int32) *instruction {
 	i := &instruction{
-		op:   (word & 0x0000F000) >> 12,
+		op:   (word & 0x0000F000) >> 13,
 		data: word & 0x00000FFF,
 	}
 
