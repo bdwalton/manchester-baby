@@ -19,6 +19,7 @@ func TestInstructionFromCode(t *testing.T) {
 		{"JRP 10", &instruction{op: JRP, data: 10}, nil},
 		{"STO 2", &instruction{op: STO, data: 2}, nil},
 		{"STP", &instruction{op: STP}, nil},
+		{"NUM 10", &instruction{op: JMP, data: 10}, nil},
 
 		// Bad
 		{"JMP", nil, missingOp},

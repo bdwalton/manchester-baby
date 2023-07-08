@@ -140,6 +140,12 @@ func instructionFromCode(code string) (*instruction, error) {
 			return nil, badOperand
 		}
 
+		// This is syntactic sugar for allowing the input of
+		// numbers. Special case it.
+		if parts[0] == "NUM" {
+			return &instruction{op: JMP, data: int32(operand)}, nil
+		}
+
 		op, ok := nameOps[parts[0]]
 		if !ok {
 			return nil, badInstruction
