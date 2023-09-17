@@ -16,6 +16,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 var (
@@ -114,6 +115,8 @@ func NewBaby(prog []int32) *baby {
 }
 
 func (b *baby) Display() {
+	fmt.Println("\033[H\033[2J")
+	fmt.Printf("ci: %d, acc: %d\n", b.ci, b.acc)
 	for row := 0; row < words; row++ {
 		rw := b.mem.RawWord(int32(row))
 		i := instFromWord(b.mem.GetWord(int32(row)))
@@ -123,18 +126,43 @@ func (b *baby) Display() {
 }
 
 func (b *baby) Step() {
+	// The Baby increments the ci (current instruction) counter
+	// prior to loading, not after executing from the current
+	// value.
+	b.ci += 1
+
 	inst := instFromWord(b.mem.GetWord(int32(b.ci)))
 	fmt.Println(inst)
-	b.running = false
+
+	switch inst.op {
+	case JMP:
+		b.ci = register(inst.data)
+	case SUB:
+		b.acc = b.acc - register(b.mem.GetWord(inst.data))
+	case CMP:
+		if b.acc < 0 {
+			b.ci += 1
+		}
+	case LDN:
+		b.acc = register(-b.mem.GetWord(inst.data))
+	case JRP:
+		b.ci = b.ci + register(b.mem.GetWord(inst.data))
+	case STO:
+		b.mem.SetWord(inst.data, int32(b.acc))
+	case STP:
+		b.running = false
+	}
 }
 
 func (b *baby) Run() {
 	for {
+		b.Display()
 		if !b.running {
 			break
 		}
 
 		b.Step()
+		time.Sleep(1 * time.Second)
 	}
 }
 
