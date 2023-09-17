@@ -28,25 +28,25 @@ const (
 
 // Instruction opcodes
 const (
-	JMP  = iota // Jump (000)
-	SUB         // Subtract (001)
-	LDN         // Load negative (010)
-	CMP         // Compare (011)
-	JRP         // Jump relative (100)
-	SUB2        // Subtract (101)
-	STO         // Store (110)
-	STP         // Stop (111)
+	JMP  = iota // Jump (0; 000 in LSB first)
+	JRP         // Jump relative (1; 100 in LSB first)
+	LDN         // Load negative (2; 010 in LSB first)
+	STO         // Store (3; 110 in LSB first)
+	SUB         // Subtract (4; 001 in LSB first)
+	SUB2        // Subtract (5; 101 in LSB first)
+	CMP         // Compare (6; 011 in LSB first)
+	STP         // Stop (7; 111 in LSB first)
 )
 
-var opNames = []string{"JMP", "SUB", "LDN", "CMP", "JRP", "SUB", "STO", "STP"}
+var opNames = []string{"JMP", "JRP", "LDN", "STO", "SUB", "SUB", "CMP", "STP"}
 var nameOps = map[string]int32{
 	"JMP": JMP,
-	"SUB": SUB,
-	"LDN": LDN,
-	"CMP": CMP,
 	"JRP": JRP,
-	// SUB2
+	"LDN": LDN,
 	"STO": STO,
+	"SUB": SUB,
+	// SUB2
+	"CMP": CMP,
 	"STP": STP,
 }
 
