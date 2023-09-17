@@ -12,6 +12,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"math/bits"
 	"os"
 	"strconv"
 	"strings"
@@ -84,8 +85,22 @@ func instFromWord(word int32) *instruction {
 
 type register int32
 
+type memory [words]int32
+
+func (m *memory) GetWord(i int32) int32 {
+	return int32(bits.Reverse32(uint32(m[i])))
+}
+
+func (m *memory) RawWord(i int32) uint32 {
+	return uint32(m[i])
+}
+
+func (m *memory) SetWord(i int32, w int32) {
+	m[i] = int32(bits.Reverse32(uint32(w)))
+}
+
 type baby struct {
-	memory      [words]int32
+	mem         memory
 	ci, pi, acc register // registers (ci == pc -> program counter, pi == present instruction, acc == accumulator)
 	running     bool
 }
@@ -93,20 +108,22 @@ type baby struct {
 func NewBaby(prog []int32) *baby {
 	b := &baby{running: true}
 	for i, m := range prog {
-		b.memory[i] = m
+		b.mem.SetWord(int32(i), m)
 	}
 	return b
 }
 
 func (b *baby) Display() {
 	for row := 0; row < words; row++ {
-		fmt.Printf("%032s\n", strconv.FormatInt(int64(b.memory[row]), 2))
+		rw := b.mem.RawWord(int32(row))
+		i := instFromWord(b.mem.GetWord(int32(row)))
+		fmt.Printf("%04d: %032s - %s\n", row, strconv.FormatInt(int64(rw), 2), i)
 	}
 	fmt.Println()
 }
 
 func (b *baby) Step() {
-	inst := instFromWord(b.memory[b.ci])
+	inst := instFromWord(b.mem.GetWord(int32(b.ci)))
 	fmt.Println(inst)
 	b.running = false
 }
