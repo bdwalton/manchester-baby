@@ -1,5 +1,12 @@
 package main
 
+// Manchester Baby
+// Details of the machine gathered from several sources:
+// * https://blog.mark-stevens.co.uk/2017/02/manchester-baby-ssem-emulator/
+// * https://en.wikipedia.org/wiki/Manchester_Baby
+// * http://curation.cs.manchester.ac.uk/computer50/www.computer50.org/mark1/prog98/prizewinners.html
+// * http://curation.cs.manchester.ac.uk/computer50/www.computer50.org/mark1/new.baby.html
+
 import (
 	"errors"
 	"flag"
