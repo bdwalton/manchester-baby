@@ -23,15 +23,20 @@ func TestInstructionFromCode(t *testing.T) {
 		{"0023 NUM 10", 23, &instruction{op: JMP, data: 10}, nil},
 
 		// Bad
+		{"000A JMP", 0, nil, badAddress},
+		{"000A JMP 22", 0, nil, badAddress},
 		{"0000 JMP", 0, nil, missingOp},
 		{"0000 SUB", 0, nil, missingOp},
 		{"0000 LDN", 0, nil, missingOp},
 		{"0000 CMP 21", 0, nil, extraOp},
+		{"000X CMP", 0, nil, badAddress},
 		{"0000 JRP", 0, nil, missingOp},
 		{"0000 STO", 0, nil, missingOp},
 		{"0000 STP 21", 0, nil, extraOp},
 
 		// Ugly
+		{"", 0, nil, badAddress},
+
 		{"0000 BAD 21", 0, nil, badInstruction},
 		{"0000 21 BAD", 0, nil, badOperand},
 		{"0000 21 21", 0, nil, badInstruction},

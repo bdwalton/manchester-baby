@@ -156,13 +156,14 @@ func (b *baby) Run() {
 		}
 
 		b.Step()
-		time.Sleep(1 * time.Second)
+		time.Sleep(time.Second / 700) // Baby ran at ~700 instructions per second
 	}
 }
 
 var (
 	missingOp      = errors.New("invalid code - missing operand")
 	extraOp        = errors.New("invalid code - unexpected argument")
+	badAddress     = errors.New("invalid address - unusable address")
 	badMemory      = errors.New("invalid binary code - couldn't convert to integer")
 	badOperand     = errors.New("invalid code - invalid operand")
 	badInstruction = errors.New("invalid code - unknown instruction")
@@ -173,7 +174,7 @@ func instructionFromCode(code string) (int32, *instruction, error) {
 
 	n, err := strconv.ParseUint(parts[0], 10, 32)
 	if err != nil {
-		return 0, nil, badMemory
+		return 0, nil, badAddress
 	}
 
 	switch parts[1] {
