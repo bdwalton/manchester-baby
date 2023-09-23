@@ -88,16 +88,8 @@ type register int32
 
 type memory [words]int32
 
-func (m *memory) GetWord(i int32) int32 {
-	return int32(bits.Reverse32(uint32(m[i])))
-}
-
-func (m *memory) RawWord(i int32) uint32 {
-	return uint32(m[i])
-}
-
-func (m *memory) SetWord(i int32, w int32) {
-	m[i] = int32(bits.Reverse32(uint32(w)))
+func (m *memory) RawWord(i int) uint32 {
+	return bits.Reverse32(uint32(m[i]))
 }
 
 type baby struct {
@@ -118,9 +110,9 @@ func (b *baby) Display() {
 	fmt.Println("\033[H\033[2J")
 	fmt.Printf("ci: %d, acc: %d\n", b.ci, b.acc)
 	for row := 0; row < words; row++ {
-		rw := b.mem.RawWord(int32(row))
-		i := instFromWord(b.mem.GetWord(int32(row)))
-		fmt.Printf("%04d: %032s - %s\n", row, strconv.FormatInt(int64(rw), 2), i)
+		rw := b.mem.RawWord(row)
+		i := instFromWord(b.mem[row])
+		fmt.Printf("%04d:%032s | [%s ; %d]\n", row, strconv.FormatInt(int64(rw), 2), i, b.mem[row])
 	}
 	fmt.Println()
 }
@@ -131,24 +123,27 @@ func (b *baby) Step() {
 	// value.
 	b.ci += 1
 
-	inst := instFromWord(b.mem.GetWord(int32(b.ci)))
+	inst := instFromWord(b.mem[b.ci])
 	fmt.Println(inst)
 
 	switch inst.op {
 	case JMP:
 		b.ci = register(inst.data)
 	case SUB:
-		b.acc = b.acc - register(b.mem.GetWord(inst.data))
+		b.acc = b.acc - register(b.mem[inst.data])
 	case CMP:
 		if b.acc < 0 {
 			b.ci += 1
 		}
 	case LDN:
-		b.acc = register(-b.mem.GetWord(inst.data))
+		b.acc = register(-b.mem[inst.data])
 	case JRP:
-		b.ci = b.ci + register(b.mem.GetWord(inst.data))
+		// Because we increment ci before executing, the jump
+		// must go to the instruction prior to the one we
+		// expect to execute
+		b.ci = b.ci + register(b.mem[inst.data]) - 1
 	case STO:
-		b.mem.SetWord(inst.data, int32(b.acc))
+		b.mem[inst.data] = int32(b.acc)
 	case STP:
 		b.running = false
 	}
