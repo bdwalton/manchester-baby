@@ -98,12 +98,8 @@ type baby struct {
 	running     bool
 }
 
-func NewBaby(prog []int32) *baby {
-	b := &baby{running: true}
-	for i, m := range prog {
-		b.mem.SetWord(int32(i), m)
-	}
-	return b
+func NewBaby(mem memory) *baby {
+	return &baby{running: true, mem: mem}
 }
 
 func (b *baby) Display() {
@@ -164,6 +160,7 @@ func (b *baby) Run() {
 var (
 	missingOp      = errors.New("invalid code - missing operand")
 	extraOp        = errors.New("invalid code - unexpected argument")
+	badMemory      = errors.New(("invalid binary code - couldn't convert to integer"))
 	badOperand     = errors.New("invalid code - invalid operand")
 	badInstruction = errors.New("invalid code - unknown instruction")
 )
@@ -202,38 +199,68 @@ func instructionFromCode(code string) (*instruction, error) {
 	}
 }
 
-func loadProgram(programfile string) ([]int32, error) {
+func memFromBin(code string) (int32, int32, error) {
+	parts := strings.SplitN(code, ":", 2)
+	if len(parts) < 2 {
+		return 0, 0, missingOp
+	}
+
+	n, err := strconv.ParseUint(parts[0], 10, 32)
+	if err != nil {
+		return 0, 0, badMemory
+	}
+	i, err := strconv.ParseUint(parts[1], 2, 32)
+	if err != nil {
+		return 0, 0, badMemory
+	}
+
+	return int32(n), int32(bits.Reverse32(uint32(i))), nil
+}
+
+// Function loadProgram takes a file path and reads a baby program from it.
+// Programs may be written in either assembly or binary.
+// Assembly format:
+// INST DATA - JRP 24
+// Binary format:
+// WORD#:32-bit Binary - 0000:00000110101001000100000100000100
+func loadProgram(programfile string) (memory, error) {
+	var mem memory
+
 	data, err := os.ReadFile(programfile)
 	if err != nil {
-		return nil, fmt.Errorf("error reading programfile: %v", err)
+		return mem, fmt.Errorf("error reading programfile: %v", err)
 	}
 
 	lines := strings.Split(string(data), "\n")
-	prog := []int32{}
+
 	for i, line := range lines {
 		if line != "" {
-			inst, err := instructionFromCode(line)
-			if err != nil {
-				return nil, fmt.Errorf("error on line %d: %v", i+1, err)
+			if strings.Contains(line, ":") {
+				n, m, err := memFromBin(line)
+				if err != nil {
+					return mem, fmt.Errorf("error on line %d: %v", i+1, err)
+				}
+				mem[n] = m
+			} else {
+				inst, err := instructionFromCode(line)
+				if err != nil {
+					return mem, fmt.Errorf("error on line %d: %v", i+1, err)
+				}
+				mem[i] = inst.toInt32()
 			}
-			prog = append(prog, inst.toInt32())
 		}
 	}
 
-	if len(prog) > words {
-		return nil, fmt.Errorf("too many words (%d) for baby (max words: %d)", len(prog), words)
-	}
-
-	return prog, nil
+	return mem, nil
 }
 
 func main() {
 	flag.Parse()
 
-	prog, err := loadProgram(*programfile)
+	mem, err := loadProgram(*programfile)
 	if err != nil {
 		log.Fatalf("Couldn't load program from %q: %v", *programfile, err)
 	}
-	b := NewBaby(prog)
+	b := NewBaby(mem)
 	b.Run()
 }
