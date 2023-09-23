@@ -168,37 +168,42 @@ var (
 	badInstruction = errors.New("invalid code - unknown instruction")
 )
 
-func instructionFromCode(code string) (*instruction, error) {
-	parts := strings.Split(code, " ")
+func instructionFromCode(code string) (int32, *instruction, error) {
+	parts := strings.SplitN(code, " ", 3)
 
-	switch parts[0] {
+	n, err := strconv.ParseUint(parts[0], 10, 32)
+	if err != nil {
+		return 0, nil, badMemory
+	}
+
+	switch parts[1] {
 	case "CMP", "STP":
-		if len(parts) > 1 {
-			return nil, extraOp
+		if len(parts) > 2 {
+			return 0, nil, extraOp
 		}
-		return &instruction{op: nameOps[parts[0]]}, nil
+		return int32(n), &instruction{op: nameOps[parts[1]]}, nil
 	default:
-		if len(parts) < 2 {
-			return nil, missingOp
+		if len(parts) < 3 {
+			return 0, nil, missingOp
 		}
 
-		operand, err := strconv.Atoi(parts[1])
+		operand, err := strconv.Atoi(parts[2])
 		if err != nil {
-			return nil, badOperand
+			return 0, nil, badOperand
 		}
 
 		// This is syntactic sugar for allowing the input of
 		// numbers. Special case it.
-		if parts[0] == "NUM" {
-			return &instruction{op: JMP, data: int32(operand)}, nil
+		if parts[1] == "NUM" {
+			return int32(n), &instruction{op: JMP, data: int32(operand)}, nil
 		}
 
-		op, ok := nameOps[parts[0]]
+		op, ok := nameOps[parts[1]]
 		if !ok {
-			return nil, badInstruction
+			return 0, nil, badInstruction
 		}
 
-		return &instruction{op: op, data: int32(operand)}, nil
+		return int32(n), &instruction{op: op, data: int32(operand)}, nil
 	}
 }
 
@@ -245,11 +250,11 @@ func loadProgram(programfile string) (memory, error) {
 				}
 				mem[n] = m
 			} else {
-				inst, err := instructionFromCode(line)
+				n, inst, err := instructionFromCode(line)
 				if err != nil {
 					return mem, fmt.Errorf("error on line %d: %v", i+1, err)
 				}
-				mem[i] = inst.toInt32()
+				mem[n] = inst.toInt32()
 			}
 		}
 	}
