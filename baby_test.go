@@ -1,9 +1,40 @@
 package main
 
 import (
+	"math"
 	"reflect"
 	"testing"
 )
+
+func TestMemFromBin(t *testing.T) {
+	cases := []struct {
+		input   string
+		wantN   int32
+		want    int32
+		wantErr error
+	}{
+		// Good
+		{"0001:11011000000000100000000010000000", 1, 16793627, nil},
+		{"0031:11111111111111111111111111111111", 31, -1, nil},
+		{"0031:11111111111111111111111111111110", 31, math.MaxInt32, nil},
+		{"0030:10000000000000000000000000000000", 30, 1, nil},
+		{"0022:00000000000000000000000000000001", 22, math.MinInt32, nil},
+		// Bad
+		{"-1:11011000000000100000000010000000", 0, 0, badAddress},
+		{":11011000000000100000000010000000", 0, 0, badAddress},
+		{"0032:11011000000000100000000010000000", 0, 0, badAddress},
+		{"0031:21011000000000100000000010000000", 0, 0, badMemory},
+		// Ugly
+		{"", 0, 0, badEntry},
+	}
+
+	for i, tc := range cases {
+		n, got, err := memFromBin(tc.input)
+		if tc.wantN != n || got != tc.want || err != tc.wantErr {
+			t.Errorf("case %d: n = %d, want(%d) || got(%v) != want(%v) || err(%v) != wantErr(%v)", i, n, tc.wantN, got, tc.want, err, tc.wantErr)
+		}
+	}
+}
 
 func TestInstructionFromCode(t *testing.T) {
 	cases := []struct {

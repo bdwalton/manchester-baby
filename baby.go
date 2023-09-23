@@ -162,6 +162,7 @@ func (b *baby) Run() {
 
 var (
 	missingOp      = errors.New("invalid code - missing operand")
+	badEntry       = errors.New("invalid code - missing address, binary or code")
 	extraOp        = errors.New("invalid code - unexpected argument")
 	badAddress     = errors.New("invalid address - unusable address")
 	badMemory      = errors.New("invalid binary code - couldn't convert to integer")
@@ -211,13 +212,14 @@ func instructionFromCode(code string) (int32, *instruction, error) {
 func memFromBin(code string) (int32, int32, error) {
 	parts := strings.SplitN(code, ":", 2)
 	if len(parts) < 2 {
-		return 0, 0, missingOp
+		return 0, 0, badEntry
 	}
 
 	n, err := strconv.ParseUint(parts[0], 10, 32)
-	if err != nil {
-		return 0, 0, badMemory
+	if err != nil || n >= words || n < 0 {
+		return 0, 0, badAddress
 	}
+
 	i, err := strconv.ParseUint(parts[1], 2, 32)
 	if err != nil {
 		return 0, 0, badMemory
