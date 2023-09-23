@@ -115,8 +115,8 @@ func (b *baby) Display() {
 
 func (b *baby) Step() {
 	// The Baby increments the ci (current instruction) counter
-	// prior to loading, not after executing from the current
-	// value.
+	// prior to loading the instruction, not after executing from
+	// the current value.
 	b.ci += 1
 
 	inst := instFromWord(b.mem[b.ci])
