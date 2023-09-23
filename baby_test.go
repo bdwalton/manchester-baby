@@ -24,6 +24,8 @@ func TestInstructionFromCode(t *testing.T) {
 
 		// Bad
 		{"000A JMP", 0, nil, badAddress},
+		{"-1 JMP 22", 0, nil, badAddress},
+		{"0032 JMP 22", 0, nil, badAddress},
 		{"000A JMP 22", 0, nil, badAddress},
 		{"0000 JMP", 0, nil, missingOp},
 		{"0000 SUB", 0, nil, missingOp},

@@ -173,7 +173,7 @@ func instructionFromCode(code string) (int32, *instruction, error) {
 	parts := strings.SplitN(code, " ", 3)
 
 	n, err := strconv.ParseUint(parts[0], 10, 32)
-	if err != nil {
+	if err != nil || n >= words || n < 0 {
 		return 0, nil, badAddress
 	}
 
