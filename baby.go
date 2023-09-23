@@ -163,7 +163,7 @@ func (b *baby) Run() {
 var (
 	missingOp      = errors.New("invalid code - missing operand")
 	extraOp        = errors.New("invalid code - unexpected argument")
-	badMemory      = errors.New(("invalid binary code - couldn't convert to integer"))
+	badMemory      = errors.New("invalid binary code - couldn't convert to integer")
 	badOperand     = errors.New("invalid code - invalid operand")
 	badInstruction = errors.New("invalid code - unknown instruction")
 )
