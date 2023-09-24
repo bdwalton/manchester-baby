@@ -119,8 +119,10 @@ func (b *baby) Reboot(mem memory) {
 	b.acc = 0
 }
 
-func (b *baby) Reset(mem memory) {
+func (b *baby) Reset() {
 	b.ci = 0
+	b.acc = 0
+	b.running = true
 }
 
 func (b *baby) Step() {
@@ -300,7 +302,7 @@ func main() {
 		case 'B', 'b':
 			b.Reboot(mem)
 		case 'E', 'e':
-			b.Reset(mem)
+			b.Reset()
 		case 'Q', 'q':
 			break
 		}
