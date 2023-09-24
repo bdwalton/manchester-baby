@@ -104,11 +104,15 @@ func NewBaby(mem memory) *baby {
 
 func (b *baby) Display() {
 	fmt.Println("\033[H\033[2J")
-	fmt.Printf("ci: %d, acc: %d\n", b.ci, b.acc)
+	fmt.Printf("ci: %d, acc: %d, running: %t\n", b.ci, b.acc, b.running)
 	for row := 0; row < words; row++ {
 		rw := b.mem.RawWord(row)
 		i := instFromWord(b.mem[row])
-		fmt.Printf("%04d:%032s | [%s ; %d]\n", row, strconv.FormatInt(int64(rw), 2), i, b.mem[row])
+		ind := "    "
+		if row == int(b.ci) {
+			ind = " <=="
+		}
+		fmt.Printf("%04d:%032s | %s [%s ; %d]\n", row, strconv.FormatInt(int64(rw), 2), ind, i, b.mem[row])
 	}
 	fmt.Println()
 }
