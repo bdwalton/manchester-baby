@@ -115,8 +115,7 @@ func (b *baby) Display() {
 
 func (b *baby) Reboot(mem memory) {
 	b.mem = mem
-	b.ci = 0
-	b.acc = 0
+	b.Reset()
 }
 
 func (b *baby) Reset() {
