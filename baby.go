@@ -283,5 +283,26 @@ func main() {
 		log.Fatalf("Couldn't load program from %q: %v", *programfile, err)
 	}
 	b := NewBaby(mem)
-	b.Run()
+	for {
+		b.Display()
+		fmt.Printf("(R)un, (S)tep, R(e)set, Re(b)oot, (Q)uit: ")
+		var input rune
+
+		_, err := fmt.Scanf("%c\n", &input)
+		if err != nil {
+			fmt.Println("Invalid input: ", err)
+		}
+		switch input {
+		case 'R', 'r':
+			b.Run()
+		case 'S', 's':
+			b.Step()
+		case 'B', 'b':
+			b.Reboot(mem)
+		case 'E', 'e':
+			b.Reset(mem)
+		case 'Q', 'q':
+			break
+		}
+	}
 }
