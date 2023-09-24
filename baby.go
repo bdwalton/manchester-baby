@@ -93,9 +93,9 @@ func (m *memory) RawWord(i int) uint32 {
 }
 
 type baby struct {
-	mem         memory
-	ci, pi, acc register // registers (ci == pc -> program counter, pi == present instruction, acc == accumulator)
-	running     bool
+	mem     memory
+	ci, acc register // registers (ci == pc -> program counter, acc == accumulator)
+	running bool
 }
 
 func NewBaby(mem memory) *baby {
