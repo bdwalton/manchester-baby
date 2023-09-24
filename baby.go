@@ -113,6 +113,16 @@ func (b *baby) Display() {
 	fmt.Println()
 }
 
+func (b *baby) Reboot(mem memory) {
+	b.mem = mem
+	b.ci = 0
+	b.acc = 0
+}
+
+func (b *baby) Reset(mem memory) {
+	b.ci = 0
+}
+
 func (b *baby) Step() {
 	// The Baby increments the ci (current instruction) counter
 	// prior to loading the instruction, not after executing from
