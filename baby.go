@@ -108,11 +108,11 @@ func (b *baby) Display() {
 	for row := 0; row < words; row++ {
 		rw := b.mem.RawWord(row)
 		i := instFromWord(b.mem[row])
-		ind := "    "
+		ind := ""
 		if row == int(b.ci) {
 			ind = " <=="
 		}
-		fmt.Printf("%04d:%032s | %s [%s ; %d]\n", row, strconv.FormatInt(int64(rw), 2), ind, i, b.mem[row])
+		fmt.Printf("%04d:%032s | %4s [%-8s ; %12d]\n", row, strconv.FormatInt(int64(rw), 2), ind, i, b.mem[row])
 	}
 	fmt.Println()
 }
