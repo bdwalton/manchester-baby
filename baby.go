@@ -142,7 +142,7 @@ func (b *baby) Step() {
 		// Because we increment ci before executing, the jump
 		// must go to the instruction prior to the one we
 		// expect to execute
-		b.ci = register(inst.data) - 1
+		b.ci = register(b.mem[inst.data] - 1)
 	case SUB:
 		b.acc = b.acc - register(b.mem[inst.data])
 	case CMP:
