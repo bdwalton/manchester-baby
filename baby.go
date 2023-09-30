@@ -168,7 +168,7 @@ func (b *baby) Run() {
 		}
 
 		b.Step()
-		time.Sleep(time.Second / 700) // Baby ran at ~700 instructions per second
+		time.Sleep(time.Millisecond) // This is short. ~1.2 ms per instruction.
 	}
 }
 
