@@ -25,8 +25,7 @@ var (
 )
 
 const (
-	wordSize = 32
-	words    = 32
+	words = 32 // The machine has this many address locations
 )
 
 // Instruction opcodes
