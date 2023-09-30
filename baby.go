@@ -6,6 +6,7 @@ package main
 // * https://en.wikipedia.org/wiki/Manchester_Baby
 // * http://curation.cs.manchester.ac.uk/computer50/www.computer50.org/mark1/prog98/prizewinners.html
 // * http://curation.cs.manchester.ac.uk/computer50/www.computer50.org/mark1/new.baby.html
+// * https://www.icsa.inf.ed.ac.uk/research/groups/hase/models/ssem/index.html
 
 import (
 	"errors"
@@ -76,12 +77,15 @@ func (i *instruction) toInt32() int32 {
 }
 
 func instFromWord(word int32) *instruction {
-	i := &instruction{
-		op:   (word & 0x0000F000) >> 13,
-		data: word & 0x00000FFF,
-	}
+	// Decoding a memory word to an instruction, we use the specification from:
+	// https://www.icsa.inf.ed.ac.uk/research/groups/hase/models/ssem/index.html
+	// | Line No.	| Not Used | Func. No. | Not Used |
+	// | 0 1 2 3 4	| 5 .. 12  | 13 14 15  | 16 .. 31 |
 
-	return i
+	return &instruction{
+		op:   (word & 0x0000E000) >> 13,
+		data: word & 0x0000001F,
+	}
 }
 
 type register int32
