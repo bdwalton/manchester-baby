@@ -305,7 +305,7 @@ func main() {
 		case 'E', 'e':
 			b.Reset()
 		case 'Q', 'q':
-			break
+			os.Exit(0)
 		}
 	}
 }
