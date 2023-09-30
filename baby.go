@@ -115,7 +115,10 @@ func (b *baby) Display() {
 		if row == int(b.ci) {
 			ind = " <=="
 		}
-		fmt.Printf("%04d:%032s | %4s [%-8s ; %12d]\n", row, strconv.FormatInt(int64(rw), 2), ind, i, b.mem[row])
+
+		s := fmt.Sprintf("%032s", strconv.FormatInt(int64(rw), 2))
+		s = strings.ReplaceAll(strings.ReplaceAll(s, "0", "."), "1", "#")
+		fmt.Printf("%04d:%32s | %4s [%-8s ; %12d]\n", row, s, ind, i, b.mem[row])
 	}
 	fmt.Println()
 }
