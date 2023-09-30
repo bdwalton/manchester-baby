@@ -143,10 +143,7 @@ func (b *baby) Step() {
 
 	switch inst.op {
 	case JMP:
-		// Because we increment ci before executing, the jump
-		// must go to the instruction prior to the one we
-		// expect to execute
-		b.ci = register(b.mem[inst.data] - 1)
+		b.ci = register(b.mem[inst.data])
 	case SUB:
 		b.acc = b.acc - register(b.mem[inst.data])
 	case CMP:
@@ -156,10 +153,7 @@ func (b *baby) Step() {
 	case LDN:
 		b.acc = register(-b.mem[inst.data])
 	case JRP:
-		// Because we increment ci before executing, the jump
-		// must go to the instruction prior to the one we
-		// expect to execute
-		b.ci = b.ci + register(b.mem[inst.data]) - 1
+		b.ci = b.ci + register(b.mem[inst.data])
 	case STO:
 		b.mem[inst.data] = int32(b.acc)
 	case STP:
